@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  gateway:
+    build: ./gateway
+    ports:
+      - "80:3000"
+    depends_on:
+      - user
+      - order
+      - product
+
+  user:
+    build: ./service-user
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=db
+    depends_on:
+      - db
+
+  order:
+    build: ./service-order
+    ports:
+      - "3002:3000"
+    depends_on:
+      - db
+
+  product:
+    build: ./service-product
+    ports:
+      - "3003:3000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: appdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
